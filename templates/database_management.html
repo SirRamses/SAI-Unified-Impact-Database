@@ -4,67 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAI Unified Impact Database Management</title>
-    <link rel="icon" type="image/png" href="static/images/sailogo.png">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/sailogo.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+    <style>
+        th {
+            position: sticky;
+            top: 0;
+            background: #f3f4f6;
+            z-index: 10;
+        }
+        .searchable-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 
 <body class="min-h-screen flex flex-col" style="background-color: #F3DD4C;">
 
-    <!-- TOP NAVBAR -->
-    <nav class="bg-white shadow-md px-6 h-20 flex items-center">
-        <img src="static/images/sailogo.png" alt="SAI Logo" class="h-12 w-auto">
-        <h1 class="ml-4 text-xl font-bold text-gray-800">SAI Unified Impact Database</h1>
-    </nav>
+<!-- TOP NAVBAR -->
+<nav class="bg-white shadow-md px-6 h-20 flex items-center">
+    <img src="{{ url_for('static', filename='images/sailogo.png') }}" alt="SAI Logo" class="h-12 w-auto">
+    <h1 class="ml-4 text-xl font-bold text-gray-800">SAI Unified Impact Database</h1>
+</nav>
 
-    <!-- MAIN LAYOUT -->
-    <div class="flex flex-1">
+<div class="flex flex-1">
 
-        <!-- SIDE NAV -->
-       <aside class="w-64 shadow-md p-6" style="background-color: #F4E9B3;">
-            <nav class="flex flex-col space-y-4 h-full">
+    <!-- SIDE NAV -->
+    <aside class="w-64 shadow-md p-6" style="background-color: #F4E9B3;">
+        <nav class="flex flex-col space-y-4 h-full">
+            <a href="#" class="py-3 px-4 rounded-lg font-semibold hover:bg-yellow-100">
+                SAI Dashboard
+            </a>
+            <a href="{{ url_for('learners_list') }}" class="py-3 px-4 rounded-lg font-semibold hover:bg-yellow-100">
+                Learner Data
+            </a>
+            <a href="{{ url_for('database_management_page') }}" class="py-3 px-4 rounded-lg font-semibold hover:bg-yellow-100">
+                Database Management
+            </a>
+            {% if session.get('role') == 'admin' %}
+            <a href="{{ url_for('accounts_management_page') }}" class="py-3 px-4 rounded-lg font-semibold hover:bg-yellow-100">
+                Accounts Management
+            </a>
+            {% endif %}
+            <a href="{{ url_for('logout_page') }}" class="mt-auto flex items-center gap-3 py-3 px-4 rounded-lg font-semibold hover:bg-amber-200">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </a>
+        </nav>
+    </aside>
 
-                <!-- Always visible links -->
-                <a href="{{ url_for('dashboard') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
-                    SAI Dashboard
-                </a>
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 p-10 overflow-hidden">
 
-                <a href="{{ url_for('learner_profiles') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
-                    Learner Data
-                </a>
+        <h1 class="text-3xl font-bold text-gray-800">Database Management</h1>
+        <p class="mt-2 text-gray-700">Upload, validate, preview, and save Silid Aralan datasets. Editing of XLSX data files cannot be done here. Ensure data accuracy before uploading.
+            Editing of data files should be done externally.
+        </p>
 
-                <a href="{{ url_for('database_management') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
-                    Database Management
-                </a>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="mt-4">
+                    {% for msg in messages %}
+                        <div class="bg-red-200 text-red-800 p-2 rounded mb-2">{{ msg }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-                <!-- Admin-only links -->
-                {% if session.get('role') == 'admin' %}
-                <a href="{{ url_for('accounts_management') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
-                    Accounts Management
-                </a>
-                {% endif %}
+        <!-- ===================== -->
+        <!-- REGION SECTIONS -->
+        <!-- ===================== -->
+        {% for region, dfs_region in [("Luzon", dfs_luzon), ("Visayas", dfs_visayas), ("Mindanao", dfs_mindanao)] %}
 
-                <!-- Logout button at bottom -->
-                <a href="{{ url_for('logout') }}" class="mt-auto flex items-center gap-3 py-3 px-4 rounded-lg font-semibold text-left text-gray-800 hover:bg-amber-200 transition">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <span>Logout</span>
-                </a>
+        <h2 class="text-2xl font-bold mt-8">{{ region }} Data</h2>
 
-            </nav>
-        </aside>
+        <div class="mt-4 bg-white p-4 rounded shadow-md">
+            <form action="{{ url_for('database_management_page') }}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="region" value="{{ region }}">
+                <label class="font-semibold block mb-2">
+                    Upload XLSX Data File for {{ region }} (8 required sheets):
+                </label>
+                <input type="file" name="file" accept=".xlsx" class="border p-2 rounded w-full">
+                <div class="mt-3 flex gap-4">
+                    <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 px-4 py-2 rounded font-semibold">
+                        Upload & Validate
+                    </button>
+                    <button type="submit" name="save_db" class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded font-semibold text-white">
+                        Save to Database
+                    </button>
+                </div>
+            </form>
+        </div>
 
-        <!-- MAIN CONTENT -->
-        <main class="flex-1 p-10">
-            <h1 class="text-3xl font-bold text-gray-800">
-                SAI Unified Impact Database Management
-            </h1>
-            <p class="mt-4 text-gray-700">
-                View and upload the latest Silid Aralan Data.
-            </p>
-        </main>
+        {% if dfs_region %}
+            {% for sheet_name, rows in dfs_region.items() %}
+                {% include "partials/table_preview.html" %}
+            {% endfor %}
+        {% endif %}
 
-    </div>
+        {% endfor %}
+
+    </main>
+</div>
 
 </body>
 </html>

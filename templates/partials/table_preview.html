@@ -1,0 +1,51 @@
+<h3 class="mt-4 font-semibold text-lg">{{ sheet_name }}</h3>
+
+<!-- Search Input -->
+<input type="text" placeholder="Search {{ sheet_name }}" 
+       class="search-input border p-2 rounded w-full mb-2"
+       onkeyup="searchTable(this, '{{ sheet_name|replace(' ', '_') }}')">
+
+<div class="overflow-x-auto mt-2 mb-4 border border-gray-300 rounded bg-white">
+    <!-- Scrollable container -->
+    <div class="max-h-64 overflow-y-auto bg-white">
+        <table class="min-w-full border border-gray-300 searchable-table bg-white" id="table-{{ sheet_name|replace(' ', '_') }}">
+            <thead class="bg-white sticky top-0">
+                <tr>
+                    {% for col in rows[0].keys() %}
+                    <th class="px-3 py-2 border-b border-gray-300 text-left">{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody class="bg-white">
+                {% for row in rows %}
+                <tr class="bg-white">
+                    {% for value in row.values() %}
+                    <td class="px-3 py-1 border-b border-gray-200">{{ value }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JavaScript search function -->
+<script>
+function searchTable(inputElem, tableId) {
+    const filter = inputElem.value.toLowerCase();
+    const table = document.getElementById('table-' + tableId);
+    const trs = table.tBodies[0].getElementsByTagName('tr');
+
+    for (let i = 0; i < trs.length; i++) {
+        const tds = trs[i].getElementsByTagName('td');
+        let show = false;
+        for (let j = 0; j < tds.length; j++) {
+            if (tds[j].textContent.toLowerCase().includes(filter)) {
+                show = true;
+                break;
+            }
+        }
+        trs[i].style.display = show ? '' : 'none';
+    }
+}
+</script>

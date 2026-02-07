@@ -3,47 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI Unified Impact Database Manage Accounts</title>
-    <link rel="icon" type="image/png" href="static/images/sailogo.png">
+    <title>SAI Unified Impact Database - Manage Accounts</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/sailogo.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
 </head>
 
-<body class="min-h-screen flex flex-col" style="background-color: #F3DD4C;">
+<body class="min-h-screen flex flex-col bg-[#F3DD4C]">
 
+    <!-- TOP NAVBAR -->
     <nav class="bg-white shadow-md px-6 h-20 flex items-center">
-        <img src="static/images/sailogo.png" alt="SAI Logo" class="h-12 w-auto">
+        <img src="{{ url_for('static', filename='images/sailogo.png') }}" alt="SAI Logo" class="h-12 w-auto">
         <h1 class="ml-4 text-xl font-bold text-gray-800">SAI Unified Impact Database</h1>
     </nav>
 
+    <!-- MAIN WRAPPER -->
     <div class="flex flex-1">
 
+        <!-- SIDENAV -->
         <aside class="w-64 shadow-md p-6" style="background-color: #F4E9B3;">
             <nav class="flex flex-col space-y-4 h-full">
 
                 <!-- Always visible links -->
-                <a href="{{ url_for('dashboard') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
+                <a href="{{ url_for('dashboard_page') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
                     SAI Dashboard
                 </a>
 
-                <a href="{{ url_for('learner_profiles') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
+                <a href="{{ url_for('learners_list') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
                     Learner Data
                 </a>
 
-                <a href="{{ url_for('database_management') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
+                <a href="{{ url_for('database_management_page') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
                     Database Management
                 </a>
 
                 <!-- Admin-only links -->
                 {% if session.get('role') == 'admin' %}
-                <a href="{{ url_for('accounts_management') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
+                <a href="{{ url_for('accounts_management_page') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
                     Accounts Management
                 </a>
                 {% endif %}
 
                 <!-- Logout button at bottom -->
-                <a href="{{ url_for('logout') }}" class="mt-auto flex items-center gap-3 py-3 px-4 rounded-lg font-semibold text-left text-gray-800 hover:bg-amber-200 transition">
+                <a href="{{ url_for('logout_page') }}" class="mt-auto flex items-center gap-3 py-3 px-4 rounded-lg font-semibold text-left text-gray-800 hover:bg-amber-200 transition">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>Logout</span>
                 </a>
@@ -51,12 +53,13 @@
             </nav>
         </aside>
 
+        <!-- MAIN CONTENT -->
         <main class="flex-1 p-10">
             <h1 class="text-3xl font-bold text-gray-800">
-                SAI Unified Impact Database Accounts Management
+                SAI Unified Impact Database - Accounts Management
             </h1>
             <p class="mt-4 text-gray-700">
-                Only authorized Admin of Silid Aralan can access this section.
+                Only authorized Admins of Silid Aralan can access this section.
             </p>
         </main>
 

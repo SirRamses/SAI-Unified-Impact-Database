@@ -3,63 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ learner.name }} - SAI Learner Profile</title>
-    <link rel="icon" type="image/png" href="static/images/sailogo.png"
+    <title>Learner Data - SAI</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/sailogo.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        th {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 10;
+        }
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
-
 <body class="min-h-screen flex flex-col" style="background-color: #F3DD4C;">
 
-    <!-- TOP NAVBAR -->
-    <nav class="bg-white shadow-md px-6 h-20 flex items-center">
-        <img src="static/images/sailogo.png" alt="SAI Logo" class="h-12 w-auto">
-        <h1 class="ml-4 text-xl font-bold text-gray-800">SAI Unified Impact Database</h1>
-    </nav>
+<!-- TOP NAVBAR -->
+<nav class="bg-white shadow-md px-6 h-20 flex items-center">
+    <img src="{{ url_for('static', filename='images/sailogo.png') }}" alt="SAI Logo" class="h-12 w-auto">
+    <h1 class="ml-4 text-xl font-bold text-gray-800">SAI Unified Impact Database</h1>
+</nav>
 
-    <!-- MAIN LAYOUT -->
-    <div class="flex flex-1">
+<div class="flex flex-1">
 
-        <!-- SIDE NAV -->
-        <aside class="w-64 shadow-md p-6" style="background-color: #F4E9B3;">
-            <nav class="flex flex-col space-y-4 h-full">
-                <a href="{{ url_for('dashboard') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
-                    SAI Dashboard
-                </a>
-                <a href="{{ url_for('learner_profiles') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
-                    Learner Data
-                </a>
-                <a href="{{ url_for('database_management') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
-                    Database Management
-                </a>
-                {% if session.get('role') == 'admin' %}
-                <a href="{{ url_for('accounts_management') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
-                    Accounts Management
-                </a>
-                {% endif %}
+    <!-- SIDE NAV -->
+    <aside class="w-64 shadow-md p-6" style="background-color: #F4E9B3;">
+        <nav class="flex flex-col space-y-4 h-full">
+            <a href="#" class="py-3 px-4 rounded-lg font-semibold hover:bg-yellow-100">Dashboard</a>
+            <a href="{{ url_for('learners_list') }}" class="py-3 px-4 rounded-lg font-semibold hover:bg-yellow-100">Learner Data</a>
+            <a href="{{ url_for('database_management_page') }}" class="py-3 px-4 rounded-lg font-semibold hover:bg-yellow-100">Database Management</a>
+            {% if session.get('role') == 'admin' %}
+            <a href="{{ url_for('accounts_management_page') }}" class="py-3 px-4 rounded-lg font-semibold hover:bg-yellow-100">Accounts Management</a>
+            {% endif %}
+            <a href="{{ url_for('logout_page') }}" class="mt-auto flex items-center gap-3 py-3 px-4 rounded-lg font-semibold hover:bg-amber-200">
+                Logout
+            </a>
+        </nav>
+    </aside>
 
-                <a href="{{ url_for('logout') }}" class="mt-auto flex items-center gap-3 py-3 px-4 rounded-lg font-semibold text-left text-gray-800 hover:bg-amber-200 transition">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <span>Logout</span>
-                </a>
-            </nav>
-        </aside>
-
-        <!-- MAIN CONTENT -->
-        <main class="flex-1 p-10">
-            <h1 class="text-3xl font-bold text-gray-800">
-                {{ learner.name }} - Profile
-            </h1>
-            <div class="mt-6 flex gap-6 items-start">
-                <img src="{{ url_for('static', filename=learner.image) }}" alt="{{ learner.name }}" class="h-48 w-48 rounded-full object-cover shadow-md">
-                <div>
-                    <p class="text-gray-700 font-semibold">Learner ID: {{ learner.unique_id }}</p>
-                    <p class="mt-4 text-gray-700">{{ learner.description }}</p>
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 p-10 overflow-hidden">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="mt-4">
+                    {% for msg in messages %}
+                        <div class="bg-red-200 text-red-800 p-2 rounded mb-2">{{ msg }}</div>
+                    {% endfor %}
                 </div>
-            </div>
-        </main>
+            {% endif %}
+        {% endwith %}
 
-    </div>
+        <!-- ===================== -->
+        <!-- LUZON -->
+        <!-- ===================== -->
+        <h2 class="text-2xl font-bold mt-4">Luzon Learners</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Learner Number</th>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Region</th>
+                        <th>Learning Hub</th>
+                        <th>Program</th>
+                        <th>Class</th>
+                        <th>Co-Learner</th>
+                        <th>Grade Level</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for learner in dfs_luzon %}
+                    <tr>
+                        <td>{{ learner.learner_number }}</td>
+                        <td>{{ learner.name }}</td>
+                        <td>{{ learner.gender }}</td>
+                        <td>{{ learner.region }}</td>
+                        <td>{{ learner.learning_hub }}</td>
+                        <td>{{ learner.program }}</td>
+                        <td>{{ learner.class }}</td>
+                        <td>{{ learner.co_learner }}</td>
+                        <td>{{ learner.grade_level }}</td>
+                        <td>
+                            <a href="{{ url_for('learner_detail', learner_number=learner.learner_number) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
+                                View Profile
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
+        <!-- ===================== -->
+        <!-- VISAYAS -->
+        <!-- ===================== -->
+        <h2 class="text-2xl font-bold mt-8">Visayas Learners</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Learner Number</th>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Region</th>
+                        <th>Learning Hub</th>
+                        <th>Program</th>
+                        <th>Class</th>
+                        <th>Co-Learner</th>
+                        <th>Grade Level</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for learner in dfs_visayas %}
+                    <tr>
+                        <td>{{ learner.learner_number }}</td>
+                        <td>{{ learner.name }}</td>
+                        <td>{{ learner.gender }}</td>
+                        <td>{{ learner.region }}</td>
+                        <td>{{ learner.learning_hub }}</td>
+                        <td>{{ learner.program }}</td>
+                        <td>{{ learner.class }}</td>
+                        <td>{{ learner.co_learner }}</td>
+                        <td>{{ learner.grade_level }}</td>
+                        <td>
+                            <a href="{{ url_for('learner_detail', learner_number=learner.learner_number) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
+                                View Profile
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ===================== -->
+        <!-- MINDANAO -->
+        <!-- ===================== -->
+        <h2 class="text-2xl font-bold mt-8">Mindanao Learners</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Learner Number</th>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Region</th>
+                        <th>Learning Hub</th>
+                        <th>Program</th>
+                        <th>Class</th>
+                        <th>Co-Learner</th>
+                        <th>Grade Level</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for learner in dfs_mindanao %}
+                    <tr>
+                        <td>{{ learner.learner_number }}</td>
+                        <td>{{ learner.name }}</td>
+                        <td>{{ learner.gender }}</td>
+                        <td>{{ learner.region }}</td>
+                        <td>{{ learner.learning_hub }}</td>
+                        <td>{{ learner.program }}</td>
+                        <td>{{ learner.class }}</td>
+                        <td>{{ learner.co_learner }}</td>
+                        <td>{{ learner.grade_level }}</td>
+                        <td>
+                            <a href="{{ url_for('learner_detail', learner_number=learner.learner_number) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
+                                View Profile
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+</div>
 </body>
 </html>

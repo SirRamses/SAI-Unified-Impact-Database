@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAI Unified Impact Database Dashboard</title>
-    <link rel="icon" type="image/png" href="static/images/sailogo.png">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/sailogo.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -13,7 +13,7 @@
 
     <!-- TOP NAVBAR -->
     <nav class="bg-white shadow-md px-6 h-20 flex items-center">
-        <img src="static/images/sailogo.png" alt="SAI Logo" class="h-12 w-auto">
+        <img src="{{ url_for('static', filename='images/sailogo.png') }}" alt="SAI Logo" class="h-12 w-auto">
         <h1 class="ml-4 text-lg sm:text-xl font-bold text-gray-800">
             SAI Unified Impact Database
         </h1>
@@ -27,27 +27,27 @@
             <nav class="flex flex-col space-y-4 h-full">
 
                 <!-- Always visible links -->
-                <a href="{{ url_for('dashboard') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
+                <a href="{{ url_for('dashboard_page') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
                     SAI Dashboard
                 </a>
 
-                <a href="{{ url_for('learner_profiles') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
+                <a href="{{ url_for('learners_list') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
                     Learner Data
                 </a>
 
-                <a href="{{ url_for('database_management') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
+                <a href="{{ url_for('database_management_page') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
                     Database Management
                 </a>
 
                 <!-- Admin-only links -->
                 {% if session.get('role') == 'admin' %}
-                <a href="{{ url_for('accounts_management') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
+                <a href="{{ url_for('accounts_management_page') }}" class="py-3 px-4 rounded-lg font-semibold text-left hover:bg-yellow-100">
                     Accounts Management
                 </a>
                 {% endif %}
 
                 <!-- Logout button at bottom -->
-                <a href="{{ url_for('logout') }}" class="mt-auto flex items-center gap-3 py-3 px-4 rounded-lg font-semibold text-left text-gray-800 hover:bg-amber-200 transition">
+                <a href="{{ url_for('logout_page') }}" class="mt-auto flex items-center gap-3 py-3 px-4 rounded-lg font-semibold text-left text-gray-800 hover:bg-amber-200 transition">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>Logout</span>
                 </a>
@@ -69,23 +69,23 @@
             <!-- STAT CARDS -->
             <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                <div class="stat-card">
-                    <h2 class="stat-title">Luzon</h2>
-                    <p class="stat-value">
+                <div class="bg-white shadow rounded-lg p-6">
+                    <h2 class="text-lg font-semibold text-gray-700">Luzon</h2>
+                    <p class="mt-2 text-2xl font-bold text-gray-800">
                         {{ learner_counts['Luzon'] if learner_counts else 0 }} learners
                     </p>
                 </div>
 
-                <div class="stat-card">
-                    <h2 class="stat-title">Visayas</h2>
-                    <p class="stat-value">
+                <div class="bg-white shadow rounded-lg p-6">
+                    <h2 class="text-lg font-semibold text-gray-700">Visayas</h2>
+                    <p class="mt-2 text-2xl font-bold text-gray-800">
                         {{ learner_counts['Visayas'] if learner_counts else 0 }} learners
                     </p>
                 </div>
 
-                <div class="stat-card">
-                    <h2 class="stat-title">Mindanao</h2>
-                    <p class="stat-value">
+                <div class="bg-white shadow rounded-lg p-6">
+                    <h2 class="text-lg font-semibold text-gray-700">Mindanao</h2>
+                    <p class="mt-2 text-2xl font-bold text-gray-800">
                         {{ learner_counts['Mindanao'] if learner_counts else 0 }} learners
                     </p>
                 </div>
